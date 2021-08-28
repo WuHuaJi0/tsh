@@ -13,5 +13,5 @@ func prompt() {
 	current, _ := user.Current()
 	hostname, _ := os.Hostname()
 	getwd, _ := os.Getwd()
-	fmt.Printf("\033[0;32;34m%s@\033[32m%s\033[m:%s", current.Username, hostname, getwd)
+	fmt.Printf("\033[0;32;34m%s@\033[32m%s\033[m:%s:", current.Username, hostname, getwd)
 }

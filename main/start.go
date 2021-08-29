@@ -14,6 +14,13 @@ func main() {
 		//todo: why not syscall.forkexec is not work correctly here.
 		line, _ := reader.ReadString('\n')
 		command, args := lineToCommand(line)
+
+		if command == "cd" {
+			cd(args)
+			prompt()
+			continue
+		}
+
 		if !commandInPath(command) {
 			fmt.Println("tsh:" + "command not found:" + command)
 			prompt()

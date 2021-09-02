@@ -23,3 +23,17 @@ func commandInPath(command string) bool {
 	}
 	return false
 }
+
+func replaceHomeToTilde(pwd string) string {
+	if strings.Contains(pwd, os.Getenv("HOME")) {
+		return strings.Replace(pwd, os.Getenv("HOME"), "~", 1)
+	}
+	return pwd
+}
+
+func replaceTildeToHome(pwd string) string {
+	if strings.HasPrefix(pwd, "~") {
+		return strings.Replace(pwd, "~", os.Getenv("HOME"), 1)
+	}
+	return pwd
+}

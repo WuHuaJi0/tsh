@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"fmt"
@@ -7,9 +7,9 @@ import (
 )
 
 /**
- * 用于输出命令行的 prompt
+ * 用于输出命令行的 Prompt
  */
-func prompt() {
+func Prompt() {
 	current, _ := user.Current()
 	hostname, _ := os.Hostname()
 	pwdOrigin, _ := os.Getwd()

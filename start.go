@@ -5,25 +5,27 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"tinyshell/builtin"
+	"tinyshell/util"
 )
 
 func run(command string, args []string) {
 
-	record(command)
+	builtin.Record(command)
 
 	if command == "cd" {
-		cd(args)
+		builtin.Cd(args)
 		return
 	}
 
 	if command == "history" {
-		history()
+		builtin.History()
 		return
 	}
 
-	if result, index := isSearchHistory(command); result {
-		commandString := getHistory(index)
-		command, args := lineToCommand(commandString)
+	if result, index := builtin.IsSearchHistory(command); result {
+		commandString := builtin.GetHistory(index)
+		command, args := util.LineToCommand(commandString)
 		run(command, args)
 		return
 	}
@@ -49,15 +51,15 @@ func run(command string, args []string) {
 }
 
 func main() {
-	prompt()
+	util.Prompt()
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		//todo: why not syscall.forkexec is not work correctly here.
 		line, _ := reader.ReadString('\n')
-		command, args := lineToCommand(line)
+		command, args := util.LineToCommand(line)
 
 		run(command, args)
 
-		prompt()
+		util.Prompt()
 	}
 }

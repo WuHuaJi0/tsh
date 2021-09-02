@@ -1,8 +1,8 @@
-package main
+package util
 
 import "strings"
 
-func lineToCommand(line string) (string, []string) {
+func LineToCommand(line string) (string, []string) {
 	line = strings.Replace(line, "\n", "", -1) // remove the last \n
 	command := strings.Split(line, " ")
 	if len(command) > 1 {

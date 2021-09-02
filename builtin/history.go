@@ -1,4 +1,4 @@
-package main
+package builtin
 
 import (
 	"bufio"
@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// record the command to a history file
-func record(command string) {
+// Record the command to a history file
+func Record(command string) {
 	path := os.Getenv("HOME") + "/.tsh_history"
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil && os.IsNotExist(err) {
@@ -32,8 +32,8 @@ func record(command string) {
 	}
 }
 
-// read all history in history file
-func history() {
+// read all History in History file
+func History() {
 	path := os.Getenv("HOME") + "/.tsh_history"
 	file, err := os.Open(path)
 	if err != nil {
@@ -52,7 +52,7 @@ func history() {
 }
 
 //checkout if a command is like !number, eg: !123
-func isSearchHistory(command string) (bool, int) {
+func IsSearchHistory(command string) (bool, int) {
 	if !strings.HasPrefix(command, "!") {
 		return false, -1
 	}
@@ -64,7 +64,7 @@ func isSearchHistory(command string) (bool, int) {
 	return false, 0
 }
 
-func getHistory(index int) string {
+func GetHistory(index int) string {
 	file, _ := os.Open(os.Getenv("HOME") + "/.tsh_history")
 	scanner := bufio.NewScanner(file)
 	current := 1

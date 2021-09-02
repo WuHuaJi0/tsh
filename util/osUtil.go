@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"io/ioutil"
@@ -31,7 +31,7 @@ func replaceHomeToTilde(pwd string) string {
 	return pwd
 }
 
-func replaceTildeToHome(pwd string) string {
+func ReplaceTildeToHome(pwd string) string {
 	if strings.HasPrefix(pwd, "~") {
 		return strings.Replace(pwd, "~", os.Getenv("HOME"), 1)
 	}

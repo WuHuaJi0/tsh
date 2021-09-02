@@ -13,14 +13,12 @@ import (
 // Record the command to a history file
 func Record(command string) {
 	path := os.Getenv("HOME") + "/.tsh_history"
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil && os.IsNotExist(err) {
-		_, createErr := os.Create(path)
-		if createErr != nil {
-			fmt.Println("tsh: create .tsh_history failed！")
-			return
-		}
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println("tsh: create .tsh_history failed！")
+		return
 	}
+	defer file.Close()
 
 	timestamp := time.Now().Unix()
 	s := strconv.FormatInt(timestamp, 10)
@@ -36,6 +34,7 @@ func Record(command string) {
 func History() {
 	path := os.Getenv("HOME") + "/.tsh_history"
 	file, err := os.Open(path)
+	defer file.Close()
 	if err != nil {
 		fmt.Println("tsh: can not read .tsh_history")
 		return
@@ -66,6 +65,7 @@ func IsSearchHistory(command string) (bool, int) {
 
 func GetHistory(index int) string {
 	file, _ := os.Open(os.Getenv("HOME") + "/.tsh_history")
+	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	current := 1
 	for scanner.Scan() {

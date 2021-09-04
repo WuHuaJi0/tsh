@@ -56,9 +56,21 @@ func main() {
 	for {
 		//todo: why not syscall.forkexec is not work correctly here.
 		line, _ := reader.ReadString('\n')
-		command, args := util.LineToCommand(line)
+		//command, args := util.LineToCommand(line)
 
-		run(command, args)
+		cmd, success := util.ParseCommand(line)
+		if !success {
+			fmt.Println("tsh: parse command err")
+			util.Prompt()
+			continue
+		}
+
+		if cmd.Cmd == "exit" {
+			println("Bye...")
+			os.Exit(0)
+		}
+
+		run(cmd.Cmd, cmd.Args)
 
 		util.Prompt()
 	}

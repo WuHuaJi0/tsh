@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"tinyshell/util"
 )
 
 // Record the command to a history file
@@ -15,7 +16,7 @@ func Record(command string) {
 	path := os.Getenv("HOME") + "/.tsh_history"
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
 	if err != nil {
-		fmt.Println("tsh: create .tsh_history failed！")
+		util.Err("create .tsh_history failed！")
 		return
 	}
 	defer file.Close()
@@ -26,7 +27,7 @@ func Record(command string) {
 	_, err = file.WriteString(s + ":" + command + "\n")
 
 	if err != nil {
-		fmt.Println("tsh: record history failed!")
+		util.Err("record history failed!")
 	}
 }
 
@@ -36,12 +37,12 @@ func History() {
 	file, err := os.Open(path)
 	defer file.Close()
 	if err != nil {
-		fmt.Println("tsh: can not read .tsh_history")
+		util.Err("can not read .tsh_history")
 		return
 	}
 	all, err := ioutil.ReadAll(file)
 	if err != nil {
-		fmt.Println("tsh: can not read .tsh_history")
+		util.Err("can not read .tsh_history")
 		return
 	}
 	commands := strings.Split(strings.TrimRight(string(all[:]), "\n"), "\n")

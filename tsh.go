@@ -26,9 +26,8 @@ func run(cmd util.Command) {
 	if result, index := builtin.IsSearchHistory(cmd.Cmd); result {
 		commandString := builtin.GetHistory(index)
 		historyCmd, success := util.ParseCommand(commandString)
-		//command, args := util.LineToCommand(commandString)
 		if !success {
-			fmt.Println("tsh: parse command err")
+			util.Err("parse command err")
 		}
 		run(historyCmd)
 		return
@@ -36,7 +35,7 @@ func run(cmd util.Command) {
 
 	_, err := exec.LookPath(cmd.Cmd)
 	if err != nil {
-		fmt.Println("tsh:" + "command not found:" + cmd.Cmd)
+		util.Err("command not found:" + cmd.Cmd)
 		return
 	}
 
@@ -50,7 +49,7 @@ func run(cmd util.Command) {
 		// Somethings many command may return 1 when not have enough args or received error args
 		// for example when just typing "git"  or  "git blabla" in shell.
 		if code != 1 {
-			fmt.Println("Execute Command failed:" + err.Error())
+			util.Err("Execute Command failed:" + err.Error())
 		}
 	}
 
@@ -60,19 +59,17 @@ func main() {
 	util.Prompt()
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		//todo: why not syscall.forkexec is not work correctly here.
 		line, _ := reader.ReadString('\n')
-		//command, args := util.LineToCommand(line)
 
 		cmd, success := util.ParseCommand(line)
 		if !success {
-			fmt.Println("tsh: parse command err")
+			util.Err("parse command err")
 			util.Prompt()
 			continue
 		}
 
 		if cmd.Cmd == "exit" {
-			println("Bye...")
+			fmt.Println("Bye...")
 			os.Exit(0)
 		}
 

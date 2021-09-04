@@ -20,11 +20,10 @@ func isBuiltIn(command string) (bool, int) {
 
 func Cd(path []string) {
 	if len(path) > 1 {
-		fmt.Println("cd failed: more than one args")
+		util.Err("cd failed: more than one args")
 	} else if len(path) == 0 || path[0] == "" { //if don't have a path , we jump to home directory.
 		os.Chdir(os.Getenv("HOME"))
 	} else {
-
 		err := os.Chdir(util.ReplaceTildeToHome(path[0]))
 		if err != nil {
 			fmt.Println("cd failed:" + "command: no such file or directory")

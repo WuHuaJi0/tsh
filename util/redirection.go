@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 )
@@ -28,7 +27,7 @@ func Redirection(execCmd *exec.Cmd, cmd Command) {
 		}
 		file, err := os.OpenFile(cmd.Stdin, flagStdin, 0777)
 		if err != nil {
-			fmt.Println("tsh: read stdin failed!")
+			Err("tsh: read stdin failed!")
 			return
 		}
 		execCmd.Stdin = file
@@ -44,7 +43,7 @@ func Redirection(execCmd *exec.Cmd, cmd Command) {
 		}
 		file, err := os.OpenFile(cmd.Stdout, flagStdout, 0666)
 		if err != nil {
-			fmt.Println("tsh: open stdout file failed!")
+			Err("open stdout file failed!")
 			return
 		}
 		execCmd.Stdout = file

@@ -36,7 +36,7 @@ func ParseCommand(line string) (Command, bool) {
 
 	if len(strArr) > 1 {
 		for i := 1; i < len(strArr); i++ {
-			redirectType, isAppend := IsRedirectType(strArr[i])
+			redirectType, isAppend := RedirectionType(strArr[i])
 			if (redirectType != "") && len(strArr) <= i {
 				if len(strArr) <= i {
 					fmt.Println("tsh: redirection doesn't have the dist file")

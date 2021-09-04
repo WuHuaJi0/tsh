@@ -9,36 +9,42 @@ import (
 	"tinyshell/util"
 )
 
-func run(command string, args []string) {
+func run(cmd util.Command) {
 
-	builtin.Record(command)
+	builtin.Record(cmd.Cmd)
 
-	if command == "cd" {
-		builtin.Cd(args)
+	if cmd.Cmd == "cd" {
+		builtin.Cd(cmd.Args)
 		return
 	}
 
-	if command == "history" {
+	if cmd.Cmd == "history" {
 		builtin.History()
 		return
 	}
 
-	if result, index := builtin.IsSearchHistory(command); result {
+	if result, index := builtin.IsSearchHistory(cmd.Cmd); result {
 		commandString := builtin.GetHistory(index)
-		command, args := util.LineToCommand(commandString)
-		run(command, args)
+		historyCmd, success := util.ParseCommand(commandString)
+		//command, args := util.LineToCommand(commandString)
+		if !success {
+			fmt.Println("tsh: parse command err")
+		}
+		run(historyCmd)
 		return
 	}
 
-	_, err := exec.LookPath(command)
+	_, err := exec.LookPath(cmd.Cmd)
 	if err != nil {
-		fmt.Println("tsh:" + "command not found:" + command)
+		fmt.Println("tsh:" + "command not found:" + cmd.Cmd)
 		return
 	}
 
-	cmd := exec.Command(command, args...)
+	execCmd := exec.Command(cmd.Cmd, cmd.Args...)
 
-	output, err := cmd.Output()
+	util.Redirection(execCmd, cmd)
+	execCmd.Run()
+
 	if err != nil {
 		code := err.(*exec.ExitError).ProcessState.ExitCode()
 		// Somethings many command may return 1 when not have enough args or received error args
@@ -47,7 +53,7 @@ func run(command string, args []string) {
 			fmt.Println("Execute Command failed:" + err.Error())
 		}
 	}
-	fmt.Print(string(output))
+
 }
 
 func main() {
@@ -70,7 +76,7 @@ func main() {
 			os.Exit(0)
 		}
 
-		run(cmd.Cmd, cmd.Args)
+		run(cmd)
 
 		util.Prompt()
 	}

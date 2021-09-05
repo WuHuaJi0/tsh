@@ -9,6 +9,7 @@ import (
 func isBuiltIn(command string) (bool, int) {
 	builtInCommands := [...]string{
 		"cd",
+		"history",
 	}
 	for i := range builtInCommands {
 		if builtInCommands[i] == command {

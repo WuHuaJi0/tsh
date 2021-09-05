@@ -1,6 +1,10 @@
+/**
+ * 处理管道和重定向的一些函数
+ */
 package util
 
 import (
+	"bufio"
 	"os"
 	"os/exec"
 )
@@ -57,4 +61,19 @@ func Redirection(execCmd *exec.Cmd, cmd Command) {
 	} else {
 		execCmd.Stderr = os.Stderr
 	}
+}
+
+/**
+ * 运行当前命令，并且把当前命令的输出作为下个命令的输入
+ */
+func RunAndSetPipe(current *exec.Cmd, next *exec.Cmd) {
+	current.Stdout = nil
+	next.Stdin = nil
+	pipe, _ := current.StdoutPipe()
+	current.Start()
+	outputBuf1 := bufio.NewReader(pipe)
+	stdinPipe, _ := next.StdinPipe()
+	outputBuf1.WriteTo(stdinPipe)
+	current.Wait()
+	stdinPipe.Close()
 }

@@ -2,79 +2,65 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"os"
-	"os/exec"
-	"tinyshell/builtin"
 	"tinyshell/util"
 )
 
-func run(cmd util.Command) {
+//func run(cmd util.Command) (*exec.Cmd, bool) {
+//builtin.Record(cmd.Cmd)
+////如果是要退出
+//if cmd.Cmd == "exit" {
+//	fmt.Println("Bye...")
+//	os.Exit(0)
+//}
+//
+//if cmd.Cmd == "cd" {
+//	builtin.Cd(cmd.Args)
+//	return
+//}
+//
+//if cmd.Cmd == "history" {
+//	builtin.History()
+//	return
+//}
+//if result, index := builtin.IsSearchHistory(cmd.Cmd); result {
+//	commandString := builtin.GetHistory(index)
+//	historyCmdList, success := util.LineToCommand(commandString)
+//	if !success {
+//		util.Err("parse command err")
+//}
+//run(historyCmdList)
+//return
+//}
 
-	builtin.Record(cmd.Cmd)
-
-	if cmd.Cmd == "cd" {
-		builtin.Cd(cmd.Args)
-		return
-	}
-
-	if cmd.Cmd == "history" {
-		builtin.History()
-		return
-	}
-
-	if result, index := builtin.IsSearchHistory(cmd.Cmd); result {
-		commandString := builtin.GetHistory(index)
-		historyCmd, success := util.ParseCommand(commandString)
-		if !success {
-			util.Err("parse command err")
-		}
-		run(historyCmd)
-		return
-	}
-
-	_, err := exec.LookPath(cmd.Cmd)
-	if err != nil {
-		util.Err("command not found:" + cmd.Cmd)
-		return
-	}
-
-	execCmd := exec.Command(cmd.Cmd, cmd.Args...)
-
-	util.Redirection(execCmd, cmd)
-	execCmd.Run()
-
-	if err != nil {
-		code := err.(*exec.ExitError).ProcessState.ExitCode()
-		// Somethings many command may return 1 when not have enough args or received error args
-		// for example when just typing "git"  or  "git blabla" in shell.
-		if code != 1 {
-			util.Err("Execute Command failed:" + err.Error())
-		}
-	}
-
-}
+//}
 
 func main() {
 	util.Prompt()
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		line, _ := reader.ReadString('\n')
-
-		cmd, success := util.ParseCommand(line)
+		cmdList, success := util.LineToCommand(line)
 		if !success {
 			util.Err("parse command err")
 			util.Prompt()
 			continue
 		}
 
-		if cmd.Cmd == "exit" {
-			fmt.Println("Bye...")
-			os.Exit(0)
+		execCmdList, success := util.CommandsToExecCommands(cmdList)
+		if !success {
+			util.Prompt()
+			continue
 		}
 
-		run(cmd)
-
+		count := len(execCmdList)
+		for i, current := range execCmdList {
+			if count > 1 && i <= count-2 {
+				util.RunAndSetPipe(current, execCmdList[i+1])
+			} else {
+				current.Run()
+			}
+		}
 		util.Prompt()
 	}
 }
